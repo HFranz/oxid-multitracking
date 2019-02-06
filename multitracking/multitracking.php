@@ -9,6 +9,9 @@
      public function getShipmentTrackingUrl()
      {
          if ( $this->_sShipTrackUrl === null && $this->oxorder__oxtrackcode->value ) {
+             $sSendDateDay = date("d", strtotime($this->oxorder__oxsenddate->value));
+             $sSendDateMonth = date("m", strtotime($this->oxorder__oxsenddate->value));
+             $sSendDateYear = date("Y", strtotime($this->oxorder__oxsenddate->value));
              $sTrackId = $this->oxorder__oxtrackcode->value;
              $sCarrier = $this->getShipmentTrackingCarrier();
 
@@ -17,7 +20,7 @@
                      $this->_sShipTrackUrl = "http://nolp.dhl.de/nextt-online-public/set_identcodes.do?idc=".$sTrackId."&lang=".($this->oxorder__oxlang->value==0?'de':'en');
                      break;
                 case "DPAG":
-                    $this->_sShipTrackUrl = "https://www.deutschepost.de/sendung/simpleQuery.html?local=".($this->oxorder__oxlang->value==0?'de':'en')."&form.sendungsnummer=".$sTrackId;
+                    $this->_sShipTrackUrl = "https://www.deutschepost.de/sendung/simpleQuery.html?local=".($this->oxorder__oxlang->value==0?'de':'en')."&form.sendungsnummer=".$sTrackId."&form.einlieferungsdatum_tag=".$sSendDateDay."&form.einlieferungsdatum_monat=".$sSendDateMonth."&form.einlieferungsdatum_jahr=".$sSendDateYear;
                     break;
                  case "HLG":
                      $this->_sShipTrackUrl = "http://tracking.hlg.de/Tracking.jsp?TrackID=".$sTrackId;
@@ -66,6 +69,7 @@
             preg_match("/LX\s?\d{4}\s?\d{4}\s?\d(?=DE)/", $sTrackId) ||
             preg_match("/LX\s?\d{4}\s?\d{4}\s?\d(?=DE)/", $sTrackId) ||
             preg_match("/LB\s?\d{4}\s?\d{4}\s?\d(?=DE)/", $sTrackId) ||
+            preg_match("/A\S{19}/", $sTrackId) ||
             preg_match("/XX\s?\d{2}\s?\d{3}\s?\d{3}\s?\d(?=DE)/", $sTrackId) ||
             preg_match("/RG\s?\d{2}\s?\d{3}\s?\d{3}\s?\d(?=DE)/", $sTrackId)) {
                 $sCarrier = "DPAG";
